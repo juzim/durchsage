@@ -13,7 +13,7 @@ The script should be able to handle a whole lot of use cases and it should be ea
 * To change the port (8080 is the default), set the PORT environment variable
 
 ### Required parameters
-* file: the config file, right now only trainstation-de_DE exists
+* file: the config file, right now only trainstation-de_DE and train-de_DE exist
 
 ### Optional parameters
 * format: "text" is default, can be set to "json"
