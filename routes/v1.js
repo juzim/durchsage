@@ -1,6 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var router = require('express').Router();
+var jsonfile = require('jsonfile')
 
 const sendResponse = (request, response, data) => {
   let result;
@@ -23,15 +24,13 @@ router.route('/').get(function(req, res) {
     const file = req.query.file
     if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
       throw "Config file '" + file + "' not found"
-    } else {
-      process.env.NODE_ENV = file
     }
 
-    var config = require('config');
-    const action = config.get("actions")[Math.floor(Math.random() * config.get("actions").length)];
-    var text = config.get("texts")[action], orgtext = text
+    var config = jsonfile.readFileSync('config/' + file + '.json');
+    const action = config.actions[Math.floor(Math.random() * config.actions.length)];
+    var text = config.texts[action], orgtext = text
 
-    let valueList = JSON.parse(JSON.stringify(config.get("values")))
+    let valueList = JSON.parse(JSON.stringify(config.values))
     let i = 0;
     while (text.match(/{(\w+)}/)) {
       i++
