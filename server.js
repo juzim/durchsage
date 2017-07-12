@@ -13,7 +13,8 @@ var limiter = new RateLimit({
 });
 
 app.use(limiter);
-require('./routes')(app);
+var v1 = require('./routes/v1');
+app.use('/v1', v1);
 
 var server = app.listen(process.env.PORT || 8080, function () {
     var port = server.address().port;
