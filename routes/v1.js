@@ -43,6 +43,11 @@ router.route('/').get(function(req, res) {
           throw "Could not match placeholder " + m
         }
         let values = valueList[m]
+
+        if (values.length == 0) {
+          throw "No more unique values left for '" + m + "'. Please add more choices to the config"
+        }
+
         let index = Math.floor(Math.random() * values.length)
         const item = values[index];
         values.splice(index, 1)
