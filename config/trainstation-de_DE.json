@@ -4,7 +4,7 @@
     "train": ["Zug", "ICE", "Güterzug"],
     "city": ["Augsburg", "Diedorf", "München", "Berlin", "Augsburg Hochzoll"],
     "platform": [1,2,3,4,5,6,7,8,9,10],
-    "prefix": ["Vorsicht auf Gleis {platform}"]
+    "prefix": ["Achtung auf Gleis {platform}"]
   },
   "texts": {
     "arrives": "{prefix}, der {train} aus {city} fährt ein. Zurückbleiben bitte.",

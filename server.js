@@ -1,34 +1,54 @@
 #! /usr/bin/node
 const http = require('http')
 const port = 3009
-var config = require('config');
 var express = require('express');
 var app = express();
+var fs = require('fs');
+var RateLimit = require('express-rate-limit');
 
-const getRandomFromList = (type, setList) => {
-  var list
-  if (setList == undefined) {
-    list = config.get("values")[type]
-  } else {
-    list = setList
-  }
+var limiter = new RateLimit({
+  windowMs: 60*60*24, // 24h
+  max: 100, // limit each IP to 100 requests per windowMs
+  delayMs: 0 // disable delaying - full speed until the max limit is reached
+});
+
+app.use(limiter);
+
+const getRandomFromList = (type, list) => {
 	const ran = Math.floor(Math.random()*list.length);
 	return list[ran];
 }
 
 const sendResponse = (request, response, data) => {
-  if (request.query.format == 'json') {
-    response.writeHead(200, {"Content-Type": "application/json"})
-    var json = JSON.stringify(data);
-    response.end(json)
-    return
-  }
+  let result;
+  response.setHeader('charset', 'utf8');
 
-  response.end(data.text)
+  if (request.query.format == 'json') {
+    response.setHeader("Content-Type", "application/json; charset=utf-8")
+    result = JSON.stringify(data);
+  } else {
+    response.setHeader("Content-Type", "text/plain; charset=utf-8")
+    result = data.text
+  }
+  const buffer = new Buffer(result)
+  response.setHeader('Content-Length', buffer.length)
+  response.end(buffer.toString('utf-8'))
 }
 
-app.get('/', function(req, res) {
+app.get('/v1', function(req, res) {
+  const file = req.query.file
+  if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
+    sendResponse(req, res, {"success": false, "text": "No config file '" + file + "' found"})
+    return
+  } else {
+    process.env.NODE_ENV = file
+  }
+
+  var config = require('config');
+
+  const list = config.get("values")
   console.log('New request')
+
   const action = getRandomFromList('action', config.get("actions"))
 
   let text = config.get("texts")[action]
@@ -39,11 +59,11 @@ app.get('/', function(req, res) {
 
  //	const result = text.replace('{train}', train).replace('{gleis}', gleis).replace('{city}', city).replace('{action}', action);
  	 text = text.replace(/{(\w+)}/g, function (w, m) {
- 		return getRandomFromList(m);
+ 		return getRandomFromList(m, list[m]);
  });
  // dirty way to handle nested placeholders
  text = text.replace(/{(\w+)}/g, function (w, m) {
-   return getRandomFromList(m);
+   return getRandomFromList(m, list[m]);
 });
 
  console.log("Result: " + text);
