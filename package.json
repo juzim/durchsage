@@ -1,0 +1,11 @@
+{
+  "name": "durchsage",
+  "scripts": {
+    "start": "./server.js"
+  },
+  "dependencies": {
+    "config": "^1.26.1",
+    "express": "^4.15.3",
+    "morgan": "^1.8.2"
+  }
+}
