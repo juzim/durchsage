@@ -71,4 +71,8 @@ app.get('/v1', function(req, res) {
    sendResponse(req, res, {"text": text})
 })
 
-app.listen(8080);
+
+var server = app.listen(process.env.PORT || 8080, function () {
+    var port = server.address().port;
+    console.log("App now running on port", port);
+});
