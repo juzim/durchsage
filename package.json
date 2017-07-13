@@ -3,6 +3,10 @@
   "scripts": {
     "run": "./server.js"
   },
+  "engines":
+  {
+    "node" : "~6.11.1"
+  },
   "dependencies": {
     "config": "^1.26.1",
     "express": "^4.15.3",
