@@ -3,30 +3,49 @@ var fs = require('fs');
 var router = require('express').Router();
 var jsonfile = require('jsonfile')
 
+const getConfig = (file) => {
+  if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
+    throw "Config file '" + file + "' not found"
+  }
+  return jsonfile.readFileSync('config/' + file + '.json');
+}
+
 const sendResponse = (request, response, data) => {
   let result;
   response.setHeader('charset', 'utf8');
 
-  if (request.query.format == 'json') {
-    response.setHeader("Content-Type", "application/json; charset=utf-8")
-    result = JSON.stringify(data);
-  } else {
-    response.setHeader("Content-Type", "text/plain; charset=utf-8")
-    result = data.text
-  }
+  response.setHeader("Content-Type", "application/json; charset=utf-8")
+  result = JSON.stringify(data);
+
   const buffer = new Buffer(result)
   response.setHeader('Content-Length', buffer.length)
   response.end(buffer.toString('utf-8'))
 }
 
-router.route('/:file/:action*?').get(function(req, res) {
+router.route('/files').get(function (req, res) {
+  const files = fs.readdirSync('config/');
+  sendResponse(req, res, {"success": true, "files":
+  files
+  // .filter(function(f) { @todo check if file for lang exists
+  //   return f.split('_')[1] == req.quer;
+  // })
+  .map(function(f) {
+    return f.split('_')[0];
+  }
+  )})
+})
+
+
+router.route('/:file/actions').get(function (req, res) {
+  const config = getConfig(req.params.file)
+  sendResponse(req, res, {"success": true, "file": req.params.action, "actions": config.actions})
+})
+
+router.route('/:file/:action*?')
+  .get(function(req, res) {
   try {
-    const file = req.params.file
-    if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
-      throw "Config file '" + file + "' not found"
-    }
+    const config = getConfig(req.params.file)
     let action
-    var config = jsonfile.readFileSync('config/' + file + '.json');
     if (req.params.action) {
       action = req.params.action;
 
@@ -71,7 +90,7 @@ router.route('/:file/:action*?').get(function(req, res) {
   }
 
   console.log("Result: " + text);
-  sendResponse(req, res, {"text": text})
+  sendResponse(req, res, {"success": true, "text": text})
 })
 
 module.exports = router;

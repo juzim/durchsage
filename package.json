@@ -1,17 +1,21 @@
 {
   "name": "durchsage",
   "scripts": {
-    "run": "./server.js"
+    "run": "./server.js",
+    "watch": "npm-watch"
   },
-  "engines":
-  {
-    "node" : "~6.11.1"
+  "watch": {
+   "test": "routes/*.js"
+  },
+  "engines": {
+    "node": "~6.11.1"
   },
   "dependencies": {
     "config": "^1.26.1",
     "express": "^4.15.3",
     "express-rate-limit": "^2.8.0",
     "jsonfile": "^3.0.1",
-    "morgan": "^1.8.2"
+    "morgan": "^1.8.2",
+    "npm-watch": "^0.2.0"
   }
 }

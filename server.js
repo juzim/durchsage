@@ -15,6 +15,7 @@ var limiter = new RateLimit({
 app.use(limiter);
 var v1 = require('./routes/v1');
 app.use('/v1', v1);
+app.use(express.static('public'))
 
 var server = app.listen(process.env.PORT || 8080, function () {
     var port = server.address().port;

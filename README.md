@@ -10,8 +10,14 @@ The script should be able to handle a whole lot of use cases and it should be ea
 * Run yarn install
 * Start the server with yarn start
 * Send a request to "host:port/v1/FILE", for example 'curl "localhost:8080/v1/trainstation-de_DE"'
-* You can specify the action by appending it to the path ("localhost:8080/v1/trainstation-de_DE/welcome") 
+* You can specify the action by appending it to the path ("localhost:8080/v1/trainstation-de_DE/welcome")
 * To change the port (8080 is the default), set the PORT environment variable
+
+## Paths
+* GET VERSION/files:          list all available files
+* GET VERSION/FILE/actions:   list all available actions for a file
+* GET VERSION/FILE:           get text with random action
+* GET VERSION/FILE/ACTION:    get text with action  
 
 ## Contribution
 Feel free to add as many config files and/or translations as possible. Code fixes/improvements are also highly appreciated.

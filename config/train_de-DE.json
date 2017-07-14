@@ -6,7 +6,7 @@
     "prefix": ["Willkommen in unserem {train} nach {city}."],
     "postfix": ["Nächster halt: {city}."],
     "wagon": [1,2,3,4,5],
-    "adieu": ["Vielen Dank für Ihre Reise mit der Deutschen Bahn.", "senk ju vor träwelling deutsche bahn, wie wisch ju a plessant dschörni"]
+    "adieu": ["Vielen Dank für Ihre Reise mit der Deutschen Bahn."]
   },
   "texts": {
     "tickets": "Bitte gültigen Fahrausweis beschaffen und selbst entwerten. {postfix}",
