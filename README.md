@@ -9,14 +9,9 @@ The script should be able to handle a whole lot of use cases and it should be ea
 ## Usage
 * Run yarn install
 * Start the server with yarn start
-* Send a request, for example 'curl "localhost:8080/v1?file=trainstation-de_DE"'
+* Send a request to "host:port/v1/FILE", for example 'curl "localhost:8080/v1/trainstation-de_DE"'
+* You can specify the action by appending it to the path ("localhost:8080/v1/trainstation-de_DE/welcome") 
 * To change the port (8080 is the default), set the PORT environment variable
-
-### Required parameters
-* file: the config file, right now only trainstation-de_DE and train-de_DE exist
-
-### Optional parameters
-* format: "text" is default, can be set to "json"
 
 ## Contribution
 Feel free to add as many config files and/or translations as possible. Code fixes/improvements are also highly appreciated.

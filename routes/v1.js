@@ -19,15 +19,25 @@ const sendResponse = (request, response, data) => {
   response.end(buffer.toString('utf-8'))
 }
 
-router.route('/').get(function(req, res) {
+router.route('/:file/:action*?').get(function(req, res) {
   try {
-    const file = req.query.file
+    const file = req.params.file
     if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
       throw "Config file '" + file + "' not found"
     }
-
+    let action
     var config = jsonfile.readFileSync('config/' + file + '.json');
-    const action = config.actions[Math.floor(Math.random() * config.actions.length)];
+    if (req.params.action) {
+      action = req.params.action;
+
+      if (config.actions.indexOf(action) === -1) {
+        throw "Action '" + action + "' does not exist in " + config.actions.join(', ')
+      }
+    } else {
+      action = config.actions[Math.floor(Math.random() * config.actions.length)];
+    }
+    console.log(req.params.action, action)
+
     var text = config.texts[action], orgtext = text
 
     let valueList = JSON.parse(JSON.stringify(config.values))
