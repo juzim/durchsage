@@ -46,7 +46,7 @@ const removeOptions = function (selectbox) {
 
 const updateActions = function() {
   removeOptions(actionList)
-  client.get('http://localhost:8080/v1/' + fileList.value + '_' + voiceList.value + '/actions', function(response) {
+  client.get('v1/' + fileList.value + '_' + voiceList.value + '/actions', function(response) {
     const res = JSON.parse(response)
     if (!res.success) {
       alert('Something went wrong: ' + res.text)
@@ -75,7 +75,7 @@ msg.onend = function (event) {
 window.onload = function() {
   button.innerHTML = text_say
 
-  client.get('http://localhost:8080/v1/files', function(response) {
+  client.get('v1/files', function(response) {
     const res = JSON.parse(response)
     if (!res.success) {
       alert('Something went wrong: ' + res.text)
@@ -99,7 +99,7 @@ window.onload = function() {
       window.speechSynthesis.cancel()
       playing = false
     } else {
-      let url = 'http://localhost:8080/v1/' + fileList.value + '_' + voiceList.value
+      let url = 'v1/' + fileList.value + '_' + voiceList.value
 
       if (actionList.value != "") {
         url += '/' + actionList.value
