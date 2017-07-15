@@ -2,3 +2,16 @@
   width: 200px;
   margin: 5px;
 }
+
+.hidden {
+  display: none;
+}
+
+.disabled {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.loop-value {
+  width: 50px;
+}

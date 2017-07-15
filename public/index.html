@@ -3,18 +3,31 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
+<a href="https://github.com/juzim/durchsage"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 <div style="margin: 0 auto; width: 300px; text-align: center">
   <h1>Durchsage</h1>
-  <div style="margin: 10px 0">
+  <div style="margin: 10px 0" id="settings">
     <select class="select" id="voices"></select>
     <select class="select" id="files"></select>
     <select class="select" id="actions">
       <option value="">random</option>
     </select>
+    <div id="loop-box">
+      <input type="checkbox" id="loop"/>
+      <label for="loop">Loop?</label>
+      <div>
+        <div>Interval in minutes</div>
+        <label for="loopMin">Min</label>
+        <input class="loop-value" id="loopMin" value="2" type="number"/>
+        <label for="loopMax">Max</label>
+        <input class="loop-value" id="loopMax" value="5" type="number"/>
+      </div>
+    </div>
+
   </div>
-  <div style="margin: 0 auto; border: 1px solid black; padding: 5px; cursor: pointer; width: 150px" id="button-say">
-  </div>
+  <button style="cursor: pointer; width: 150px" id="button-say">
+  </button>
+  <span id="countdown"></span>
 </div>
 
 

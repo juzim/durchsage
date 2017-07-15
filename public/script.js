@@ -1,4 +1,3 @@
-let playing = false
 var HttpClient = function() {
   this.get = function(aUrl, aCallback) {
       var anHttpRequest = new XMLHttpRequest();
@@ -11,14 +10,25 @@ var HttpClient = function() {
       anHttpRequest.send( null );
   }
 }
-const text_say = "Say Something"
-const text_stop = "Stop"
-let button = document.getElementById("button-say")
-let voiceList = document.getElementById("voices")
-let fileList = document.getElementById("files")
-let actionList = document.getElementById("actions")
-let voices = []
-let initialized = false
+const text_say = "Say Something",
+  text_stop = "Stop"
+let button = document.getElementById("button-say"),
+  voiceList = document.getElementById("voices"),
+  fileList = document.getElementById("files"),
+  actionList = document.getElementById("actions"),
+  loopBox = document.getElementById("loop-box"),
+  loopButton = document.getElementById("loop"),
+  settings = document.getElementById("settings"),
+  loopMin = document.getElementById("loopMin"),
+  loopMax = document.getElementById("loopMax"),
+  countdownBox = document.getElementById("countdown"),
+  voices = [],
+  initialized = false,
+  playing = false,
+  playLoop = false,
+  timeout, loopTimeoutMax, loopTimeoutMin,
+  msg = new SpeechSynthesisUtterance(),
+  client = new HttpClient();
 
 speechSynthesis.onvoiceschanged = function() {
   if (initialized) {
@@ -44,9 +54,17 @@ const removeOptions = function (selectbox) {
     }
 }
 
+const toggleloopBox = function () {
+  if (actionList.value == "") {
+    loopBox.className = '';
+  } else {
+    loopBox.className = 'hidden';
+  }
+}
+
 const updateActions = function() {
   removeOptions(actionList)
-  client.get('v1/' + fileList.value + '_' + voiceList.value + '/actions', function(response) {
+  client.get('v1/' + fileList.value + '-' + getActionValue() + '/actions', function(response) {
     const res = JSON.parse(response)
     if (!res.success) {
       alert('Something went wrong: ' + res.text)
@@ -61,16 +79,47 @@ const updateActions = function() {
   });
 }
 
-var msg = new SpeechSynthesisUtterance();
-var client = new HttpClient();
+const getAndSayText = function (url, msg) {
+  client.get(url, function(response) {
+    const res = JSON.parse(response)
+    if (!res.success) {
+      alert('Something went wrong: ' + res.text)
+      return
+    }
+    msg.text = res.text
 
-msg.onstart = function (event) {
-  button.innerHTML = text_stop
-};
+    playing = true
 
-msg.onend = function (event) {
-  button.innerHTML = text_say
-};
+    msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.lang == voiceList.value; })[0];
+    window.speechSynthesis.speak(msg);
+  });
+}
+
+const getActionValue = function() {
+  return voiceList.value.replace('-', '_')
+}
+
+let timer, countdown, counter
+
+function countdownFun() {
+  countdown=countdown-1;
+  if (countdown <= 0)
+  {
+     clearInterval(counter);
+     countdownBox.innerHTML = ""
+     return;
+  }
+
+  countdownBox.innerHTML = countdown + ' seconds'
+}
+
+function loopSay(url, msg, timeout) {
+    getAndSayText(url, msg)
+    if (!playLoop) {
+      return
+    }
+    timer = setTimeout(loopSay.bind(null, url, msg), timeout);
+}
 
 window.onload = function() {
   button.innerHTML = text_say
@@ -94,30 +143,49 @@ window.onload = function() {
     updateActions()
   }
 
+  actionList.onchange = function () {
+    toggleloopBox()
+  }
+
   button.onclick = function () {
     if (playing) {
       window.speechSynthesis.cancel()
+      clearTimeout(timer)
+      clearInterval(counter);
       playing = false
+      playLoop = false
+      button.innerHTML = text_say
+      settings.className = ""
+      countdownBox.innerHTML = ""
+
     } else {
-      let url = 'v1/' + fileList.value + '_' + voiceList.value
+      let url = 'v1/' + fileList.value + '-' + getActionValue()
 
       if (actionList.value != "") {
         url += '/' + actionList.value
       }
 
-      client.get(url, function(response) {
-        const res = JSON.parse(response)
-        if (!res.success) {
-          alert('Something went wrong: ' + res.text)
+      button.innerHTML = text_stop
+      settings.className = "disabled"
+
+      if (actionList.value == "" && loop.checked) {
+        playLoop = true
+        loopTimeoutMin = loopMin.value * 60 * 1000
+        loopTimeoutMax = loopMax.value * 60 * 1000
+
+        if (loopTimeoutMin > loopTimeoutMax) {
+          alert ('Min must be less than max')
+          playLoop = false
           return
         }
-        msg.text = res.text
 
-        playing = true
+        timeout = Math.floor(Math.random() * (loopTimeoutMax - loopTimeoutMin)) + loopTimeoutMin;
+        countdown = Math.floor(timeout / 1000)
+        console.log(timeout)
+        counter=setInterval(countdownFun, 500); //1000 will  run it every 1 second
+      }
 
-        msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.lang == voiceList.value; })[0];
-        window.speechSynthesis.speak(msg);
-      });
+      loopSay(url, msg, timeout)
     }
   }
 }
