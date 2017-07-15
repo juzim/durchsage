@@ -26,6 +26,8 @@ let button = document.getElementById("button-say"),
   currentAnnouncement = document.getElementById("current-announcement"),
   currentAnnouncementBox = document.getElementById("current-announcement-box"),
   voices = [],
+  files = [],
+  modes = [],
   initialized = false,
   playing = false,
   playLoop = false,
@@ -33,26 +35,19 @@ let button = document.getElementById("button-say"),
   msg = new SpeechSynthesisUtterance(),
   client = new HttpClient();
 
+msg.onend = function() {
+  if (!playLoop) {
+    reset()
+  }
+}
+
 speechSynthesis.onvoiceschanged = function() {
   if (initialized) {
     return
   }
 
   voices = speechSynthesis.getVoices()
-
-  for (var i = 0; i < voices.length; i++) {
-    var option = document.createElement("option");
-    option.value = voices[i].lang;
-    option.text = voices[i].name;
-    voiceList.appendChild(option);
-  }
   initialized = true
-}
-
-msg.onend = function() {
-  if (!playLoop) {
-    reset()
-  }
 }
 
 var reset = function() {
@@ -83,12 +78,33 @@ const toggleloopBox = function () {
   }
 }
 
+const updateLocations = function (files) {
+  removeOptions(voiceList)
+  const availableLocations = files.filter(function (f) {
+    return f.split('-')[0] == fileList.value
+  }).map(function(l) { return l.split('-')[1]})
+
+  const availableVoices = Array.from(new Set(voices.filter(function(v) {
+    return availableLocations.indexOf(getFormatedLocation(v.lang)) != -1
+  }).map(function(v) { return {lang: v.lang, name: v.name}})))
+
+  for (var i = 0; i < availableVoices.length; i++) {
+    var option = document.createElement("option");
+    option.value = availableVoices[i].lang;
+    option.text = availableVoices[i].name;
+    voiceList.appendChild(option);
+  }
+
+  updateActions()
+}
+
 const updateActions = function() {
   removeOptions(actionList)
-  client.get('v1/' + fileList.value + '-' + getActionValue() + '/actions', function(response) {
+  client.get('v1/' + fileList.value + '-' + getFormatedLocation(voiceList.value) + '/actions', function(response) {
     const res = JSON.parse(response)
     if (!res.success) {
       alert('Something went wrong: ' + res.text)
+      reset()
       return
     }
     for (var i = 0; i < res.actions.length; i++) {
@@ -116,15 +132,17 @@ const getAndSayText = function (url, msg) {
       return
     }
     msg.text = res.text
-    msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.lang == voiceList.value; })[0];
+    msg.voice = speechSynthesis.getVoices().filter(function(voice) {
+      return getFormatedLocation(voice.lang) == getFormatedLocation(voiceList.value)
+    })[0];
     window.speechSynthesis.speak(msg);
     currentAnnouncementBox.className = ""
     currentAnnouncement.innerHTML = res.text
   });
 }
 
-const getActionValue = function() {
-  return voiceList.value.replace('-', '_')
+const getFormatedLocation = function(value) {
+  return value.replace('-', '_')
 }
 
 let timer, countdown, counter
@@ -158,7 +176,7 @@ function loopSay(url, msg, timeout) {
 }
 
 const getUrl = function() {
-  let url = 'v1/' + fileList.value + '-' + getActionValue()
+  let url = 'v1/' + fileList.value + '-' + getFormatedLocation(voiceList.value)
 
   if (actionList.value != "") {
     url += '/' + actionList.value
@@ -199,16 +217,22 @@ window.onload = function() {
       alert('Something went wrong: ' + res.text)
       return
     }
-    for (var i = 0; i < res.files.length; i++) {
+    modes = Array.from(new Set(res.files.map(function(f) { return f.split('-')[0];})))
+    for (var i = 0; i < modes.length; i++) {
       var option = document.createElement("option");
-      option.value = res.files[i];
-      option.text = res.files[i];
+      option.value = modes[i];
+      option.text = modes[i];
       fileList.appendChild(option);
     }
-    updateActions()
+    updateLocations(res.files)
+
   });
 
   fileList.onchange = function () {
+    updateLocations(files)
+  }
+
+  voiceList.onchange = function () {
     updateActions()
   }
 

@@ -30,7 +30,7 @@ router.route('/files').get(function (req, res) {
   //   return f.split('_')[1] == req.quer;
   // })
   .map(function(f) {
-    return f.split('-')[0];
+    return f.split('.')[0];
   }
   )})
 })
