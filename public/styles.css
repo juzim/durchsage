@@ -1,3 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  margin: 0 auto;
+  width: 300px;
+  text-align: center;
+}
+
 .select {
   width: 200px;
   margin: 5px;
@@ -8,10 +19,18 @@
 }
 
 .disabled {
-  filter: blur(2px);
+  filter: blur(1px);
   pointer-events: none;
+  cursor: not-allowed;
 }
 
 .loop-value {
   width: 50px;
+}
+
+#current-announcement-box {
+  margin: 10px 0;
+  padding: 5px;
+  font-style: italic;
+  border: 1px solid #eee;
 }

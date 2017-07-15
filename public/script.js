@@ -22,6 +22,9 @@ let button = document.getElementById("button-say"),
   loopMin = document.getElementById("loopMin"),
   loopMax = document.getElementById("loopMax"),
   countdownBox = document.getElementById("countdown"),
+  intervalBox = document.getElementById("interval-box"),
+  currentAnnouncement = document.getElementById("current-announcement"),
+  currentAnnouncementBox = document.getElementById("current-announcement-box"),
   voices = [],
   initialized = false,
   playing = false,
@@ -44,6 +47,24 @@ speechSynthesis.onvoiceschanged = function() {
     voiceList.appendChild(option);
   }
   initialized = true
+}
+
+msg.onend = function() {
+  if (!playLoop) {
+    reset()
+  }
+}
+
+var reset = function() {
+  window.speechSynthesis.cancel()
+  clearTimeout(timer)
+  clearInterval(counter);
+  playing = false
+  playLoop = false
+  button.innerHTML = text_say
+  settings.className = ""
+  countdownBox.innerHTML = ""
+  currentAnnouncementBox.className = "hidden"
 }
 
 const removeOptions = function (selectbox) {
@@ -79,6 +100,14 @@ const updateActions = function() {
   });
 }
 
+const toggleIntervalOptions = function() {
+    if (loopButton.checked) {
+      intervalBox.className = ''
+    } else {
+      intervalBox.className = 'disabled'
+    }
+}
+
 const getAndSayText = function (url, msg) {
   client.get(url, function(response) {
     const res = JSON.parse(response)
@@ -87,11 +116,10 @@ const getAndSayText = function (url, msg) {
       return
     }
     msg.text = res.text
-
-    playing = true
-
     msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.lang == voiceList.value; })[0];
     window.speechSynthesis.speak(msg);
+    currentAnnouncementBox.className = ""
+    currentAnnouncement.innerHTML = res.text
   });
 }
 
@@ -110,15 +138,56 @@ function countdownFun() {
      return;
   }
 
-  countdownBox.innerHTML = countdown + ' seconds'
+  countdownBox.innerHTML = "Next announcement in " + countdown + ' seconds'
+}
+const startCountdown = function (timeout) {
+  countdown = Math.floor(timeout / 1000)
+  counter = setInterval(countdownFun, 1000)
 }
 
 function loopSay(url, msg, timeout) {
+    playing = true
     getAndSayText(url, msg)
     if (!playLoop) {
       return
     }
-    timer = setTimeout(loopSay.bind(null, url, msg), timeout);
+
+    timeout = Math.floor(Math.random() * (loopTimeoutMax - loopTimeoutMin)) + loopTimeoutMin;
+    timer = setTimeout(loopSay.bind(null, url, msg, timeout), timeout);
+    startCountdown(timeout)
+}
+
+const getUrl = function() {
+  let url = 'v1/' + fileList.value + '-' + getActionValue()
+
+  if (actionList.value != "") {
+    url += '/' + actionList.value
+  }
+
+  return url
+}
+
+const handleButtonClick = function() {
+  if (playing) {
+    reset()
+  } else {
+    button.innerHTML = text_stop
+    settings.className = "disabled"
+
+    if (actionList.value == "" && loop.checked) {
+      playLoop = true
+      loopTimeoutMin = loopMin.value  * 1000 * 60
+      loopTimeoutMax = loopMax.value  * 1000 * 60
+
+      if (loopTimeoutMin > loopTimeoutMax) {
+        alert ('Min must be less than max')
+        playLoop = false
+        return
+      }
+    }
+
+    loopSay(getUrl(), msg)
+  }
 }
 
 window.onload = function() {
@@ -147,45 +216,11 @@ window.onload = function() {
     toggleloopBox()
   }
 
+  loopButton.onchange = function (e) {
+    toggleIntervalOptions()
+  }
+
   button.onclick = function () {
-    if (playing) {
-      window.speechSynthesis.cancel()
-      clearTimeout(timer)
-      clearInterval(counter);
-      playing = false
-      playLoop = false
-      button.innerHTML = text_say
-      settings.className = ""
-      countdownBox.innerHTML = ""
-
-    } else {
-      let url = 'v1/' + fileList.value + '-' + getActionValue()
-
-      if (actionList.value != "") {
-        url += '/' + actionList.value
-      }
-
-      button.innerHTML = text_stop
-      settings.className = "disabled"
-
-      if (actionList.value == "" && loop.checked) {
-        playLoop = true
-        loopTimeoutMin = loopMin.value * 60 * 1000
-        loopTimeoutMax = loopMax.value * 60 * 1000
-
-        if (loopTimeoutMin > loopTimeoutMax) {
-          alert ('Min must be less than max')
-          playLoop = false
-          return
-        }
-
-        timeout = Math.floor(Math.random() * (loopTimeoutMax - loopTimeoutMin)) + loopTimeoutMin;
-        countdown = Math.floor(timeout / 1000)
-        console.log(timeout)
-        counter=setInterval(countdownFun, 500); //1000 will  run it every 1 second
-      }
-
-      loopSay(url, msg, timeout)
-    }
+    handleButtonClick()
   }
 }
