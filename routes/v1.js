@@ -3,11 +3,13 @@ var fs = require('fs');
 var router = require('express').Router();
 var jsonfile = require('jsonfile')
 
+const BASE_DIR = 'templates/'
+
 const getConfig = (file) => {
-  if (file === undefined || !fs.existsSync('config/' + file + '.json')) {
-    throw "Config file '" + file + "' not found"
+  if (file === undefined || !fs.existsSync(BASE_DIR + file + '.json')) {
+    throw "Template '" + file + "' not found"
   }
-  return jsonfile.readFileSync('config/' + file + '.json');
+  return jsonfile.readFileSync(BASE_DIR + file + '.json');
 }
 
 const sendResponse = (request, response, data) => {
@@ -22,45 +24,50 @@ const sendResponse = (request, response, data) => {
   response.end(buffer.toString('utf-8'))
 }
 
-router.route('/files').get(function (req, res) {
-  const files = fs.readdirSync('config/');
-  sendResponse(req, res, {"success": true, "files":
-  files
-  // .filter(function(f) { @todo check if file for lang exists
-  //   return f.split('_')[1] == req.quer;
-  // })
-  .map(function(f) {
-    return f.split('.')[0];
-  }
+router.route('/templates').get(function (req, res) {
+  const templates = fs.readdirSync(BASE_DIR);
+  sendResponse(req, res, {"success": true, "templates":
+    templates.map(function(f) {
+      return f.split('.')[0];
+    }
   )})
 })
 
+const getActionList = (config) => {
+  var keys = [];
+  for(var k in config.texts) {
+    keys.push(k)
+  }
+
+  return keys
+}
 
 router.route('/:file/actions').get(function (req, res) {
-  const config = getConfig(req.params.file)
-  sendResponse(req, res, {"success": true, "file": req.params.action, "actions": config.actions})
+  const config = getConfig(req.params.file), actions = getActionList(config)
+  console.log(actions);
+
+  sendResponse(req, res, {"success": true, "file": req.params.action, "actions": actions})
 })
 
 router.route('/:file/:action*?')
   .get(function(req, res) {
   try {
-    const config = getConfig(req.params.file)
+    const config = getConfig(req.params.file),
+    actions = getActionList(config)
     let action
     if (req.params.action) {
       action = req.params.action;
 
-      if (config.actions.indexOf(action) === -1) {
-        throw "Action '" + action + "' does not exist in " + config.actions.join(', ')
+      if (actions.indexOf(action) === -1) {
+        throw "Action '" + action + "' does not exist in " + actions.join(', ')
       }
     } else {
-      action = config.actions[Math.floor(Math.random() * config.actions.length)];
+      action = actions[Math.floor(Math.random() * actions.length)];
     }
-    console.log(req.params.action, action)
 
     var text = config.texts[action], orgtext = text
 
-    let valueList = JSON.parse(JSON.stringify(config.values))
-    let i = 0;
+    let valueList = JSON.parse(JSON.stringify(config.values)), i = 0
     while (text.match(/{(\w+)}/)) {
       i++
       if (i > 10) {

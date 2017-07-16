@@ -1,0 +1,9 @@
+{
+  "values": {
+    "city": ["Washington DC", "San Francisco"],
+    "postfix": ["Next destination: {city}."]
+  },
+  "texts": {
+    "tickets": "Please stay seated at all times. {postfix}"
+  }
+}
