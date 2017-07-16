@@ -108,8 +108,6 @@ const updateTemplates = function() {
 
   try {
     removeOptions(templateList)
-    console.log(getVoiceLocationFromName(voiceList.value))
-
     const templatesForLocation = templates.filter(function (t) {
       return t.split('-')[1] == getVoiceLocationFromName(voiceList.value)
     })
@@ -246,26 +244,27 @@ const getUrl = function() {
 }
 
 const handleButtonClick = function() {
-  if (playing) {
-    reset()
-  } else {
-    initialized = true
-    button.innerHTML = text_stop
-    settings.className = "disabled"
+  try {
+    if (playing) {
+      reset()
+    } else {
+      if (actionList.value == "" && loop.checked) {
+        loopTimeoutMin = loopMin.value  * 1000 * 60
+        loopTimeoutMax = loopMax.value  * 1000 * 60
+        if (loopTimeoutMin > loopTimeoutMax) {
+          throw 'Min must be less than max'
+        }
 
-    if (actionList.value == "" && loop.checked) {
-      playLoop = true
-      loopTimeoutMin = loopMin.value  * 1000 * 60
-      loopTimeoutMax = loopMax.value  * 1000 * 60
-
-      if (loopTimeoutMin > loopTimeoutMax) {
-        alert ('Min must be less than max')
-        playLoop = false
-        return
+        playLoop = true
       }
-    }
 
-    loopSay(msg)
+      button.innerHTML = text_stop
+      settings.className = "disabled"
+
+      loopSay(msg)
+    }
+  } catch (e) {
+    showMessage("Can't play text", e, "danger")
   }
 }
 
@@ -278,48 +277,52 @@ const setLoadingState = function(list, bool) {
   }
 }
 
-  speechSynthesis.onvoiceschanged = function() {
-  if (initialized) {
-    return
-  }
-  reset()
-  setLoadingState("templates", true)
-
-  voices = speechSynthesis.getVoices()
-
-  if (voices.length == 0) {
-    showMessage('Error', 'SpeechSynthesis could not be loaded. You are either not connected to the internet or your browser does not support it.', "danger")
-    return
-  }
-
-  voiceList.onchange = function () {
-    updateTemplates(templates)
-  }
-
-  templateList.onchange = function () {
-    setLoadingState("actions", true)
-    updateActions()
-  }
-
-  actionList.onchange = function () {
-    toggleloopBox()
-  }
-
-  loopButton.onchange = function (e) {
-    toggleIntervalOptions()
-  }
-
-  button.onclick = function () {
-    handleButtonClick()
-  }
-
-  client.get('v1/templates', function(response) {
-    const res = JSON.parse(response)
-    if (!res.success) {
-      alert('Something went wrong: ' + res.text)
+speechSynthesis.onvoiceschanged = function() {
+  try {
+    if (initialized) {
       return
     }
-    templates = res.templates
-    updateLocations()
-  });
+    initialized = true
+    reset()
+    setLoadingState("templates", true)
+
+    voices = speechSynthesis.getVoices()
+
+    if (voices.length == 0) {
+      showMessage('Error', 'SpeechSynthesis could not be loaded. You are either not connected to the internet or your browser does not support it.', "danger")
+      return
+    }
+
+    voiceList.onchange = function () {
+      updateTemplates(templates)
+    }
+
+    templateList.onchange = function () {
+      setLoadingState("actions", true)
+      updateActions()
+    }
+
+    actionList.onchange = function () {
+      toggleloopBox()
+    }
+
+    loopButton.onchange = function (e) {
+      toggleIntervalOptions()
+    }
+
+    button.onclick = function () {
+      handleButtonClick()
+    }
+
+    client.get('v1/templates', function(response) {
+      const res = JSON.parse(response)
+      if (!res.success) {
+        throw res.text
+      }
+      templates = res.templates
+      updateLocations()
+    });
+  } catch (e) {
+    showMessage('Something went wrong', "e", "danger")
+  }
 }
