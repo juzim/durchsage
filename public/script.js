@@ -35,7 +35,8 @@ function main() {
     playLoop = false,
     timeout, loopTimeoutMax, loopTimeoutMin,
     msg = new SpeechSynthesisUtterance(),
-    client = new HttpClient();
+    client = new HttpClient(),
+    cachedActions = {}
 
   msg.onend = function() {
     if (!playLoop) {
@@ -85,6 +86,7 @@ function main() {
     for (var i = 0; i < availableVoices.length; i++) {
       addOption(voiceList, availableVoices[i].name, availableVoices[i].name)
     }
+    setLoadingState("voices", false)
 
     updateActions()
   }
@@ -101,21 +103,35 @@ function main() {
     list.appendChild(option);
   }
 
+  const setNewActions = function(actions) {
+    addOption(actionList, "", "random")
+    for (var i = 0; i < actions.length; i++) {
+      addOption(actionList, actions[i], actions[i])
+    }
+    setLoadingState("actions", false)
+  }
+
   const updateActions = function() {
     removeOptions(actionList)
-    client.get('v1/' + templateList.value + '-' + getVoiceLocationFromName(voiceList.value) + '/actions', function(response) {
-      const res = JSON.parse(response)
-      if (!res.success) {
-        showMessage('Something went wrong: ', res.text, "error")
-        reset()
-        return
-      }
+    const actionsKey = templateList.value + '-' + getVoiceLocationFromName(voiceList.value)
 
-      addOption(actionList, "", "random")
-      for (var i = 0; i < res.actions.length; i++) {
-        addOption(actionList, res.actions[i], res.actions[i])
-      }
-    });
+    if (cachedActions[actionsKey] != undefined) {
+      setNewActions(cachedActions[actionsKey])
+    } else {
+      client.get('v1/' + actionsKey + '/actions', function(response) {
+        console.log('new: ' + actionsKey, cachedActions)
+
+        const res = JSON.parse(response)
+        if (!res.success) {
+          showMessage('Something went wrong: ', res.text, "error")
+          reset()
+          return
+        }
+
+        cachedActions[actionsKey] = res.actions
+        setNewActions(res.actions)
+      });
+    }
   }
 
   const toggleIntervalOptions = function() {
@@ -216,10 +232,24 @@ function main() {
     currentAnnouncement.innerHTML = message
   }
 
+  const setLoadingState = function(list, bool) {
+    let node = document.getElementById("select-loading-" + list)
+    if (bool) {
+      node.className = ""
+    } else {
+      node.className = "hidden"
+    }
+  }
+
   speechSynthesis.onvoiceschanged = function() {
     if (initialized) {
       return
     }
+
+    setLoadingState("templates", true)
+    setLoadingState("voices", true)
+    setLoadingState("actions", true)
+
 
     voices = speechSynthesis.getVoices()
 
@@ -244,6 +274,8 @@ function main() {
         option.text = modes[i];
         templateList.appendChild(option);
       }
+      setLoadingState("templates", false)
+
       updateLocations(templates)
 
       button.innerHTML = text_say
@@ -251,9 +283,12 @@ function main() {
     });
 
     templateList.onchange = function () {
+      setLoadingState("voices", true)
+      setLoadingState("actions", true)
       updateLocations(templates)
     }
     voiceList.onchange = function () {
+      setLoadingState("actions", true)
       updateActions()
     }
 

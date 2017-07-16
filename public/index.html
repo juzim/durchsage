@@ -11,13 +11,57 @@
   <h1>Durchsage</h1>
   <div style="margin: 10px 0" id="settings">
     <label class="top-label" for="templates">Template</label>
-    <select class="select" id="templates"></select>
+    <span class="select-container">
+      <span id="select-loading-templates">
+        <div id="warningGradientOuterBarG">
+        	<div id="warningGradientFrontBarG" class="warningGradientAnimationG">
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        	</div>
+        </div>
+      </span>
+      <select class="select" id="templates"></select>
+    </span>
     <label class="top-label"for="voices">Language</label>
-    <select class="select" id="voices"></select>
-    <label class="top-label"for="actions">Action</label>
-    <select class="select" id="actions">
-      <option value="">random</option>
-    </select>
+    <span class="select-container">
+      <span id="select-loading-voices">
+        <div id="warningGradientOuterBarG">
+        	<div id="warningGradientFrontBarG" class="warningGradientAnimationG">
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        	</div>
+        </div>
+      </span>
+      <select class="select" id="voices"></select>
+    </span>
+
+    <label class="top-label" for="actions">Action</label>
+    <span class="select-container">
+      <span id="select-loading-actions">
+        <div id="warningGradientOuterBarG">
+        	<div id="warningGradientFrontBarG" class="warningGradientAnimationG">
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        		<div class="warningGradientBarLineG"></div>
+        	</div>
+        </div>
+      </span>
+      <select class="select" id="actions">
+        <option value="">random</option>
+      </select>
+    </span>
+
     <div id="loop-box">
       <span class="top-label">
         <label for="loop">Loop?</label>
