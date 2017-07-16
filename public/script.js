@@ -113,7 +113,7 @@ function main() {
       if (loopButton.checked) {
         intervalBox.className = ''
       } else {
-        intervalBox.className = 'disabled'
+        intervalBox.className = 'hidden'
       }
   }
 

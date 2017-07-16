@@ -34,3 +34,7 @@ body {
   font-style: italic;
   border: 1px solid #eee;
 }
+
+.button-say {
+  height: 50px;
+}
