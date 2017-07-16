@@ -17,6 +17,34 @@ var HttpClient = function() {
   }
 }
 
+var createCookie = function(name, value, days) {
+    var expires;
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    }
+    else {
+        expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(c_start, c_end));
+        }
+    }
+    return "";
+}
+
 const text_say = "Say Something",
   text_stop = "Stop"
 
@@ -72,27 +100,18 @@ const removeOptions = function (selectbox) {
     }
 }
 
-const toggleloopBox = function () {
-  if (actionList.value == "") {
-    loopBox.className = '';
-  } else {
-    loopBox.className = 'hidden';
-  }
-}
-
 const updateLocations = function () {
   removeOptions(voiceList)
 
-  // const availableLocations = templates.filter(function (f) {
-  //   return f.split('-')[0] == templateList.value
-  // }).map(function(l) { return l.split('-')[1]})
-
   const availableVoices = Array.from(new Set(voices.map(function(v) {
-    return {lang: getFormatedLocation(v.lang), name: v.name}
+    return {lang: getFormatedLocation(v.lang), name: v.name, default: v.default}
   })))
 
+  const lastVoice = getCookie('lastVoice')
+
   for (var i = 0; i < availableVoices.length; i++) {
-    addOption(voiceList, availableVoices[i].name, availableVoices[i].name)
+    let voice = availableVoices[i]
+    addOption(voiceList, voice.name, voice.name, lastVoice == voice.name || voice.default)
   }
   setLoadingState("voices", false)
 
@@ -136,10 +155,11 @@ const getVoiceLocationFromName = function (name) {
       return v.name == name})[0].lang)
 }
 
-const addOption = function(list, value, text) {
+const addOption = function(list, value, text, selected) {
   var option = document.createElement("option");
   option.value = value;
   option.text = text;
+  option.selected = selected
   list.appendChild(option);
 }
 
@@ -150,7 +170,7 @@ const setNewActions = function(actions) {
   }
   setLoadingState("actions", false)
   button.className = ""
-  toggleloopBox()
+  loopBox.className = ""
 }
 
 const updateActions = function() {
@@ -294,16 +314,13 @@ speechSynthesis.onvoiceschanged = function() {
     }
 
     voiceList.onchange = function () {
+      createCookie('lastVoice', voiceList.value, 365)
       updateTemplates(templates)
     }
 
     templateList.onchange = function () {
       setLoadingState("actions", true)
       updateActions()
-    }
-
-    actionList.onchange = function () {
-      toggleloopBox()
     }
 
     loopButton.onchange = function (e) {
