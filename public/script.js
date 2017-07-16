@@ -80,6 +80,11 @@ msg.onend = function() {
   }
 }
 
+
+msg.onerror = function(e) {
+  console.log(e.error)
+}
+
 var reset = function() {
   window.speechSynthesis.cancel()
   clearTimeout(timer)
@@ -268,12 +273,14 @@ const handleButtonClick = function() {
     if (playing) {
       reset()
     } else {
-      if (actionList.value == "" && loop.checked) {
+      if (loop.checked) {
         loopTimeoutMin = loopMin.value  * 1000 * 60
         loopTimeoutMax = loopMax.value  * 1000 * 60
-        if (loopTimeoutMin > loopTimeoutMax) {
-          throw 'Min must be less than max'
+        if (loopTimeoutMin > loopTimeoutMax || !loopTimeoutMin || !loopTimeoutMax) {
+          throw 'Invalid interval'
         }
+        createCookie('loopMin', loopMin.value, 365)
+        createCookie('loopMax', loopMax.value, 365)
 
         playLoop = true
       }
@@ -304,6 +311,12 @@ speechSynthesis.onvoiceschanged = function() {
     }
     initialized = true
     reset()
+
+    if (getCookie('loopMin')) {
+      loopMin.value = getCookie('loopMin')
+      loopMax.value = getCookie('loopMax')
+    }
+
     setLoadingState("templates", true)
 
     voices = speechSynthesis.getVoices()
