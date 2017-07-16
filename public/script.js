@@ -115,7 +115,7 @@ const updateTemplates = function() {
     })
 
     if (templatesForLocation.length == 0) {
-      throw "No templates found for this language. Feel free to add new ones on github"
+      throw "No templates found for this language. Feel free to add more templates on github"
     }
 
     modes = templatesForLocation.map(function(f) { return f.split('-')[0];})

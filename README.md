@@ -11,12 +11,12 @@ The script should be able to handle a whole lot of use cases and it should be ea
 ## Usage
 * Run yarn install
 * Start the server with yarn start
-* Change the default config file in the config folder or add a new file and activate it by setting NODE_ENV (export NODE_ENV=production) 
+* Change the default config file in the config folder or add a new file and activate it by setting NODE_ENV (export NODE_ENV=production)
 * Send a request to "http://host:port/v1/TEMPLATE", for example 'curl "http://localhost:8080/v1/trainstation-de_DE"'
 * You can specify the action by appending it to the path ("http://localhost:8080/v1/trainstation-de_DE/welcome")
 * To change the port (8080 is the default), set the PORT environment variable
 
-## Paths
+## API
 * GET VERSION/templates           list all available files
 * GET VERSION/TEMPLATE/actions    list all available actions for a file
 * GET VERSION/TEMPLATE            get text with random action
@@ -24,6 +24,8 @@ The script should be able to handle a whole lot of use cases and it should be ea
 
 ## Frontend
 There is a frontend available at at the root URL (http://localhost:8080) which utilizes the [SpeechAPI](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) and supports picking specific languages and actions. It can also be set to loop in random intervals for even more immersion.
+
+You can disable the fronent in the config.
 
 ## Contribution
 Feel free to add as many config files and/or translations as possible. Code fixes/improvements are also highly appreciated.
