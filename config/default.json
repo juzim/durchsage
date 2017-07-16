@@ -1,0 +1,9 @@
+{
+  "enableFrontend": true,
+  "rateLimit": {
+    "enabled": true,
+    "windowMs": 3600,
+    "max": 60,
+    "delayMs": 0
+  }
+}

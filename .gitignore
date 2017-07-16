@@ -71,3 +71,5 @@ package-lock.json
 # End of https://www.gitignore.io/api/node
 
 .git/
+config/*
+!config/default.json

@@ -11,6 +11,7 @@ The script should be able to handle a whole lot of use cases and it should be ea
 ## Usage
 * Run yarn install
 * Start the server with yarn start
+* Change the default config file in the config folder or add a new file and activate it by setting NODE_ENV (export NODE_ENV=production) 
 * Send a request to "http://host:port/v1/TEMPLATE", for example 'curl "http://localhost:8080/v1/trainstation-de_DE"'
 * You can specify the action by appending it to the path ("http://localhost:8080/v1/trainstation-de_DE/welcome")
 * To change the port (8080 is the default), set the PORT environment variable

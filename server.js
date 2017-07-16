@@ -5,17 +5,24 @@ var app = express();
 var RateLimit = require('express-rate-limit');
 var morgan = require('morgan')
 app.use(morgan('tiny'))
+var config = require('config');
 
 var limiter = new RateLimit({
-  windowMs: 60*60*24, // 24h
-  max: 100, // limit each IP to 100 requests per windowMs
-  delayMs: 0 // disable delaying - full speed until the max limit is reached
+  windowMs: config.get("rateLimit.windowMs"),
+  max: config.get("rateLimit.max"),
+  delayMs: config.get("rateLimit.delayMs")
 });
 
-app.use(limiter);
+if (config.get("rateLimit.enabled")) {
+  app.use(limiter);
+}
+
 var v1 = require('./routes/v1');
 app.use('/v1', v1);
-app.use(express.static('public'))
+
+if (config.get("enableFrontend")) {
+  app.use(express.static('public'))
+}
 
 var server = app.listen(process.env.PORT || 8080, function () {
     var port = server.address().port;
