@@ -1,5 +1,4 @@
 {
-  "actions": ["arrives", "departs", "passes", "welcome"],
   "values": {
     "train": ["Zug", "ICE", "Güterzug"],
     "city": ["Augsburg", "Diedorf", "München", "Berlin", "Augsburg Hochzoll"],
@@ -7,9 +6,9 @@
     "prefix": ["Achtung auf Gleis {platform}"]
   },
   "texts": {
-    "arrives": "{prefix}, der {train} aus {city} fährt ein. Zurückbleiben bitte.",
-    "departs": "{prefix}, ein {train} fährt los. Türen schließen, vorsicht bei der Abfahrt.",
-    "passes": "{prefix}, ein {train} fährt durch. Vorsicht an der Bahnsteigkante.",
-    "welcome": "Willkommen alle Reisenden aus {city} auf Gleis {platform}. Der Anschlusszug nach {city} fährt heute von Gleis {platform}"
+    "Fährt ein": "{prefix}, der {train} aus {city} fährt ein. Zurückbleiben bitte.",
+    "Fährt ab": "{prefix}, ein {train} fährt los. Türen schließen, vorsicht bei der Abfahrt.",
+    "Fährt durch": "{prefix}, ein {train} fährt durch. Vorsicht an der Bahnsteigkante.",
+    "Willkommen": "Willkommen alle Reisenden aus {city} auf Gleis {platform}. Der Anschlusszug nach {city} fährt heute von Gleis {platform}"
   }
 }

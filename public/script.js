@@ -119,8 +119,6 @@ function main() {
       setNewActions(cachedActions[actionsKey])
     } else {
       client.get('v1/' + actionsKey + '/actions', function(response) {
-        console.log('new: ' + actionsKey, cachedActions)
-
         const res = JSON.parse(response)
         if (!res.success) {
           showMessage('Something went wrong: ', res.text, "error")

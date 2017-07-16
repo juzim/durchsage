@@ -1,0 +1,10 @@
+{
+  "texts": {
+    "abbiegen": "In {distance} {direction} abbiegen.",
+    "neue route": "Die Route wird neu berechnet"
+  },
+  "values": {
+    "distance": ["50 Metern", "100 Metern", "300 Metern", "1 Kilometer"],
+    "direction": ["links", "rechts", "halb links", "halb rechts"]
+  }
+}

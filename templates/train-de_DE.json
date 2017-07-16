@@ -1,5 +1,4 @@
 {
-  "actions": ["tickets", "welcome", "arrival"],
   "values": {
     "train": ["Zug", "ICE", "Nachtexpress"],
     "city": ["Augsburg Hauptbahnhof", "Diedorf", "München Hauptbahnhof", "Berlin Hauptbahnhof", "Augsburg Hochzoll"],
@@ -9,8 +8,8 @@
     "adieu": ["Vielen Dank für Ihre Reise mit der Deutschen Bahn."]
   },
   "texts": {
-    "tickets": "Bitte gültigen Fahrausweis beschaffen und selbst entwerten. {postfix}",
-    "welcome": "{prefix} Der Speisewagen befindet sich heute in Wagen {wagon}. {postfix}",
-    "arrival": "Wir erreichen nun {city}. Dort werden alle Anschlusszüge erreicht. {adieu}"
+    "Fahrausweis": "Bitte gültigen Fahrausweis beschaffen und selbst entwerten. {postfix}",
+    "Willkommen": "{prefix} Der Speisewagen befindet sich heute in Wagen {wagon}. {postfix}",
+    "Ankunft": "Wir erreichen nun {city}. Dort werden alle Anschlusszüge erreicht. {adieu}"
   }
 }
