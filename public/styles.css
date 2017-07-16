@@ -38,3 +38,12 @@ body {
 .button-say {
   height: 50px;
 }
+
+select {
+  height: 35px;
+}
+
+.top-label {
+  width: 80px;
+  text-align: left;
+}

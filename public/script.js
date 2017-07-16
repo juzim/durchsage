@@ -57,7 +57,7 @@ function main() {
 
   const removeOptions = function (selectbox) {
       var i;
-      for(i = selectbox.options.length - 1 ; i >= 1 ; i--)
+      for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
       {
           selectbox.remove(i);
       }
@@ -73,6 +73,7 @@ function main() {
 
   const updateLocations = function (templates) {
     removeOptions(voiceList)
+
     const availableLocations = templates.filter(function (f) {
       return f.split('-')[0] == templateList.value
     }).map(function(l) { return l.split('-')[1]})
@@ -82,29 +83,37 @@ function main() {
     }).map(function(v) { return {lang: v.lang, name: v.name}})))
 
     for (var i = 0; i < availableVoices.length; i++) {
-      var option = document.createElement("option");
-      option.value = availableVoices[i].lang;
-      option.text = availableVoices[i].name;
-      voiceList.appendChild(option);
+      addOption(voiceList, availableVoices[i].name, availableVoices[i].name)
     }
 
     updateActions()
   }
 
+  const getVoiceLocationFromName = function (name) {
+      return getFormatedLocation(speechSynthesis.getVoices().filter(function(v) {
+        return v.name == name})[0].lang)
+  }
+
+  const addOption = function(list, value, text) {
+    var option = document.createElement("option");
+    option.value = value;
+    option.text = text;
+    list.appendChild(option);
+  }
+
   const updateActions = function() {
     removeOptions(actionList)
-    client.get('v1/' + templateList.value + '-' + getFormatedLocation(voiceList.value) + '/actions', function(response) {
+    client.get('v1/' + templateList.value + '-' + getVoiceLocationFromName(voiceList.value) + '/actions', function(response) {
       const res = JSON.parse(response)
       if (!res.success) {
-        alert('Something went wrong: ' + res.text)
+        showMessage('Something went wrong: ', res.text, "error")
         reset()
         return
       }
+
+      addOption(actionList, "", "random")
       for (var i = 0; i < res.actions.length; i++) {
-        var option = document.createElement("option");
-        option.value = res.actions[i];
-        option.text = res.actions[i];
-        actionList.appendChild(option);
+        addOption(actionList, res.actions[i], res.actions[i])
       }
     });
   }
@@ -117,8 +126,8 @@ function main() {
       }
   }
 
-  const getAndSayText = function (url, msg) {
-    client.get(url, function(response) {
+  const getAndSayText = function (msg) {
+    client.get(getUrl(), function(response) {
       const res = JSON.parse(response)
       if (!res.success) {
         alert('Something went wrong: ' + res.text)
@@ -126,7 +135,7 @@ function main() {
       }
       msg.text = res.text
       msg.voice = speechSynthesis.getVoices().filter(function(voice) {
-        return getFormatedLocation(voice.lang) == getFormatedLocation(voiceList.value)
+        return voice.name == voiceList.value
       })[0];
       window.speechSynthesis.speak(msg);
       showMessage("Current announcement", res.text, "info")
@@ -155,20 +164,21 @@ function main() {
     counter = setInterval(countdownFun, 1000)
   }
 
-  function loopSay(url, msg, timeout) {
+  function loopSay(msg, timeout) {
       playing = true
-      getAndSayText(url, msg)
+      getAndSayText(msg)
       if (!playLoop) {
         return
       }
 
       timeout = Math.floor(Math.random() * (loopTimeoutMax - loopTimeoutMin)) + loopTimeoutMin;
-      timer = setTimeout(loopSay.bind(null, url, msg, timeout), timeout);
+      timer = setTimeout(loopSay.bind(null, msg, timeout), timeout);
       startCountdown(timeout)
   }
 
   const getUrl = function() {
-    let url = 'v1/' + templateList.value + '-' + getFormatedLocation(voiceList.value)
+
+    let url = 'v1/' + templateList.value + '-' + getVoiceLocationFromName(voiceList.value)
 
     if (actionList.value != "") {
       url += '/' + actionList.value
@@ -196,12 +206,12 @@ function main() {
         }
       }
 
-      loopSay(getUrl(), msg)
+      loopSay(msg)
     }
   }
 
   const showMessage = function (title, message, type) {
-    currentAnnouncementBox.className = type
+    currentAnnouncementBox.className = "alert alert-" + type
     currentAnnouncementTitle.innerHTML = title
     currentAnnouncement.innerHTML = message
   }
@@ -214,7 +224,7 @@ function main() {
     voices = speechSynthesis.getVoices()
 
     if (voices.length == 0) {
-      showMessage('Error', 'SpeechSynthesis could not be loaded. Are you connected to the internet?', "error")
+      showMessage('Error', 'SpeechSynthesis could not be loaded. You are either not connected to the internet or your browser does not support it.', "danger")
       return
     }
 
@@ -226,37 +236,38 @@ function main() {
         alert('Something went wrong: ' + res.text)
         return
       }
-      modes = Array.from(new Set(res.templates.map(function(f) { return f.split('-')[0];})))
+      templates = res.templates
+      modes = Array.from(new Set(templates.map(function(f) { return f.split('-')[0];})))
       for (var i = 0; i < modes.length; i++) {
         var option = document.createElement("option");
         option.value = modes[i];
         option.text = modes[i];
         templateList.appendChild(option);
       }
-      updateLocations(res.templates)
+      updateLocations(templates)
 
       button.innerHTML = text_say
 
-      templateList.onchange = function () {
-        updateLocations(templates)
-      }
-
-      voiceList.onchange = function () {
-        updateActions()
-      }
-
-      actionList.onchange = function () {
-        toggleloopBox()
-      }
-
-      loopButton.onchange = function (e) {
-        toggleIntervalOptions()
-      }
-
-      button.onclick = function () {
-        handleButtonClick()
-      }
     });
+
+    templateList.onchange = function () {
+      updateLocations(templates)
+    }
+    voiceList.onchange = function () {
+      updateActions()
+    }
+
+    actionList.onchange = function () {
+      toggleloopBox()
+    }
+
+    loopButton.onchange = function (e) {
+      toggleIntervalOptions()
+    }
+
+    button.onclick = function () {
+      handleButtonClick()
+    }
   }
 }
 

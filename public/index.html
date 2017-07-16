@@ -10,14 +10,19 @@
 <div class="container">
   <h1>Durchsage</h1>
   <div style="margin: 10px 0" id="settings">
+    <label class="top-label" for="templates">Template</label>
     <select class="select" id="templates"></select>
+    <label class="top-label"for="voices">Language</label>
     <select class="select" id="voices"></select>
+    <label class="top-label"for="actions">Action</label>
     <select class="select" id="actions">
       <option value="">random</option>
     </select>
     <div id="loop-box">
-      <input type="checkbox" id="loop"/>
-      <label for="loop">Loop?</label>
+      <span class="top-label">
+        <label for="loop">Loop?</label>
+      </span>
+    <input type="checkbox" id="loop"/>
       <div id="interval-box" class="hidden">
         <div>Interval in minutes</div>
         <label for="loopMin">Min</label>
@@ -30,7 +35,7 @@
   </div>
   <button style="cursor: pointer; width: 150px" id="button-say" class="button-say">
   </button>
-  <div id="current-announcement-box" class="hidden">
+  <div id="current-announcement-box" class="alert hidden">
     <h3 id="current-announcement-title"></h3>
     <div id="current-announcement"></div>
   </div>
