@@ -10,6 +10,22 @@
 <div class="container">
   <h1>Durchsage</h1>
   <div style="margin: 10px 0" id="settings">
+    <label class="top-label"for="voices">Language</label>
+    <span class="select-container">
+      <span id="select-loading-voices">
+        <div id="warningGradientOuterBarG">
+          <div id="warningGradientFrontBarG" class="warningGradientAnimationG">
+            <div class="warningGradientBarLineG"></div>
+            <div class="warningGradientBarLineG"></div>
+            <div class="warningGradientBarLineG"></div>
+            <div class="warningGradientBarLineG"></div>
+            <div class="warningGradientBarLineG"></div>
+            <div class="warningGradientBarLineG"></div>
+          </div>
+        </div>
+      </span>
+      <select class="select" id="voices"></select>
+    </span>
     <label class="top-label" for="templates">Template</label>
     <span class="select-container">
       <span id="select-loading-templates">
@@ -25,22 +41,6 @@
         </div>
       </span>
       <select class="select" id="templates"></select>
-    </span>
-    <label class="top-label"for="voices">Language</label>
-    <span class="select-container">
-      <span id="select-loading-voices">
-        <div id="warningGradientOuterBarG">
-        	<div id="warningGradientFrontBarG" class="warningGradientAnimationG">
-        		<div class="warningGradientBarLineG"></div>
-        		<div class="warningGradientBarLineG"></div>
-        		<div class="warningGradientBarLineG"></div>
-        		<div class="warningGradientBarLineG"></div>
-        		<div class="warningGradientBarLineG"></div>
-        		<div class="warningGradientBarLineG"></div>
-        	</div>
-        </div>
-      </span>
-      <select class="select" id="voices"></select>
     </span>
 
     <label class="top-label" for="actions">Action</label>
@@ -77,7 +77,7 @@
     </div>
 
   </div>
-  <button style="cursor: pointer; width: 150px" id="button-say" class="button-say">
+  <button style="cursor: pointer; width: 150px" id="button-say" class="disabled">
   </button>
   <div id="current-announcement-box" class="alert hidden">
     <h3 id="current-announcement-title"></h3>
