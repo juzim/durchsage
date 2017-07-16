@@ -104,6 +104,7 @@ const updateTemplates = function() {
   setLoadingState("templates", true)
   button.className = "disabled"
   loopBox.className = "disabled"
+  currentAnnouncementBox.className = "hidden"
 
   try {
     removeOptions(templateList)
