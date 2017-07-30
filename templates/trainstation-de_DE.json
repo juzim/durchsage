@@ -3,12 +3,14 @@
     "train": ["Zug", "ICE", "Güterzug"],
     "city": ["Augsburg", "Diedorf", "München", "Berlin", "Augsburg Hochzoll"],
     "platform": [1,2,3,4,5,6,7,8,9,10],
-    "prefix": ["Achtung auf Gleis {platform}"]
+    "prefix": ["Achtung auf Gleis {platform}"],
+    "delay": ["5 Minuten", "20 Minuten", "1 Stunde"]
   },
   "texts": {
     "Fährt ein": "{prefix}, der {train} aus {city} fährt ein. Zurückbleiben bitte.",
     "Fährt ab": "{prefix}, ein {train} fährt los. Türen schließen, vorsicht bei der Abfahrt.",
     "Fährt durch": "{prefix}, ein {train} fährt durch. Vorsicht an der Bahnsteigkante.",
-    "Willkommen": "Willkommen alle Reisenden aus {city} auf Gleis {platform}. Der Anschlusszug nach {city} fährt heute von Gleis {platform}"
+    "Willkommen": "Willkommen alle Reisenden aus {city} auf Gleis {platform}. Der Anschlusszug nach {city} fährt heute von Gleis {platform}",
+    "Verspätung": "Eine Information für alle Reisenden nach {city}: der {train} nach {city} hat {delay} Verspätung."
   }
 }
