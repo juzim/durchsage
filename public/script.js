@@ -45,7 +45,7 @@ function getCookie(c_name) {
     return "";
 }
 
-const text_say = "Say Something",
+const text_say = "🕫 Durchsage!",
   text_stop = "Stop"
 
 let button = document.getElementById("button-say"),
