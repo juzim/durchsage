@@ -2,14 +2,22 @@ var express = require('express');
 var fs = require('fs');
 var router = require('express').Router();
 var jsonfile = require('jsonfile')
+var yaml = require('js-yaml');
 
 const BASE_DIR = 'templates/'
 
-const getConfig = (file) => {
-  if (file === undefined || !fs.existsSync(BASE_DIR + file + '.json')) {
-    throw "Template '" + file + "' not found"
+const getTemplate = (file) => {
+  if (fs.existsSync(BASE_DIR + file + '.json')) {
+    return jsonfile.readFileSync(BASE_DIR + file + '.json');
+  } else if (fs.existsSync(BASE_DIR + file + '.yaml')) {
+    const template = yaml.safeLoad(fs.readFileSync(BASE_DIR + file + '.yaml', {encoding: 'utf-8'}))
+    console.log(template)
+    console.log(template.texts)
+
+
+    return yaml.safeLoad(fs.readFileSync(BASE_DIR + file + '.yaml', {encoding: 'utf-8'}));
   }
-  return jsonfile.readFileSync(BASE_DIR + file + '.json');
+    throw "Template '" + file + "' not found"
 }
 
 const sendResponse = (request, response, data) => {
@@ -33,9 +41,9 @@ router.route('/templates').get(function (req, res) {
   )})
 })
 
-const getActionList = (config) => {
+const getActionList = (template) => {
   var keys = [];
-  for(var k in config.texts) {
+  for(var k in template.texts) {
     keys.push(k)
   }
 
@@ -43,8 +51,7 @@ const getActionList = (config) => {
 }
 
 router.route('/:file/actions').get(function (req, res) {
-  const config = getConfig(req.params.file), actions = getActionList(config)
-  console.log(actions);
+  const template = getTemplate(req.params.file), actions = getActionList(template)
 
   sendResponse(req, res, {"success": true, "file": req.params.action, "actions": actions})
 })
@@ -52,8 +59,8 @@ router.route('/:file/actions').get(function (req, res) {
 router.route('/:file/:action*?')
   .get(function(req, res) {
   try {
-    const config = getConfig(req.params.file),
-    actions = getActionList(config)
+    const template = getTemplate(req.params.file),
+    actions = getActionList(template)
     let action
     if (req.params.action) {
       action = req.params.action;
@@ -65,9 +72,10 @@ router.route('/:file/:action*?')
       action = actions[Math.floor(Math.random() * actions.length)];
     }
 
-    var text = config.texts[action], orgtext = text
+    var text = template.texts[action], orgtext = text
+    console.log(template)
 
-    let valueList = JSON.parse(JSON.stringify(config.values)), i = 0
+    let valueList = JSON.parse(JSON.stringify(template.values)), i = 0
     while (text.match(/{(\w+)}/)) {
       i++
       if (i > 10) {
@@ -80,7 +88,7 @@ router.route('/:file/:action*?')
         let values = valueList[m]
 
         if (values.length == 0) {
-          throw "No more unique values left for '" + m + "'. Please add more choices to the config"
+          throw "No more unique values left for '" + m + "'. Please add more choices to the template"
         }
 
         let index = Math.floor(Math.random() * values.length)
@@ -92,7 +100,7 @@ router.route('/:file/:action*?')
   } catch (e) {
     console.log(e)
 
-    sendResponse(req, res, {"success": false, "text": e})
+    sendResponse(req, res, {"success": false, "text": e.message})
     return
   }
 

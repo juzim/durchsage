@@ -1,0 +1,11 @@
+values:
+  product:
+    - 1 Liter Bio-Milch
+    - Tomatensosse
+  price:
+    - 1
+    - 2,99
+    - 5
+    - 10,99
+texts:
+  todaysOffer: "Heute im Angebot: {product}, nur {price} €"
