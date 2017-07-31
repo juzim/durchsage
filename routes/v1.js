@@ -10,11 +10,6 @@ const getTemplate = (file) => {
   if (fs.existsSync(BASE_DIR + file + '.json')) {
     return jsonfile.readFileSync(BASE_DIR + file + '.json');
   } else if (fs.existsSync(BASE_DIR + file + '.yaml')) {
-    const template = yaml.safeLoad(fs.readFileSync(BASE_DIR + file + '.yaml', {encoding: 'utf-8'}))
-    console.log(template)
-    console.log(template.texts)
-
-
     return yaml.safeLoad(fs.readFileSync(BASE_DIR + file + '.yaml', {encoding: 'utf-8'}));
   }
     throw "Template '" + file + "' not found"
@@ -73,14 +68,15 @@ router.route('/:file/:action*?')
     }
 
     var text = template.texts[action], orgtext = text
-    console.log(template)
-
+    
     let valueList = JSON.parse(JSON.stringify(template.values)), i = 0
+
     while (text.match(/{(\w+)}/)) {
       i++
       if (i > 10) {
         throw "Too many loops while parsing placeholders for " + orgtext
       }
+
       text = text.replace(/{(\w+)}/g, function (w, m) {
         if (valueList[m] == undefined) {
           throw "Could not match placeholder " + m

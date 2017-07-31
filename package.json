@@ -1,11 +1,19 @@
 {
   "name": "durchsage",
   "scripts": {
-    "run": "./server.js",
+    "run": "node server.js",
+    "test": "qunit",
     "watch": "npm-watch"
   },
   "watch": {
-    "test": "routes/*.js"
+    "test": {
+      "patterns": ["routes", "templates", "test"],
+      "extensions": "js,json,yaml"
+    },
+    "run": {
+      "patterns": ["routes"],
+      "extensions": "js"
+    }
   },
   "engines": {
     "node": "~6.11.1"
@@ -16,7 +24,6 @@
     "express-rate-limit": "^2.8.0",
     "js-yaml": "^3.9.1",
     "jsonfile": "^3.0.1",
-    "morgan": "^1.8.2",
     "npm-watch": "^0.2.0"
   },
   "devDependencies": {
