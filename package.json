@@ -9,6 +9,10 @@
     "test": {
       "patterns": ["routes", "templates", "test"],
       "extensions": "js,json,yaml"
+    },
+    "run": {
+      "patterns": ["routes"],
+      "extensions": "js"
     }
   },
   "engines": {
