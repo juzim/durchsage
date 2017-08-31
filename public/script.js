@@ -133,7 +133,8 @@ const updateTemplates = function() {
   try {
     removeOptions(templateList)
     const templatesForLocation = templates.filter(function (t) {
-      return t.split('-')[1] == getVoiceLocationFromName(voiceList.value)
+
+      return t.split('_')[0] == getVoiceLocationFromName(voiceList.value).split('_')[0]
     })
 
     if (templatesForLocation.length == 0) {
@@ -157,7 +158,8 @@ const updateTemplates = function() {
 
 const getVoiceLocationFromName = function (name) {
     return getFormatedLocation(speechSynthesis.getVoices().filter(function(v) {
-      return v.name == name})[0].lang)
+      return v.name == name
+    })[0].lang.split('_')[0])
 }
 
 const addOption = function(list, value, text, selected) {
@@ -178,9 +180,13 @@ const setNewActions = function(actions) {
   loopBox.className = ""
 }
 
+const getActionKey = function() {
+  return getVoiceLocationFromName(voiceList.value).split('_')[0] + '_' + templateList.value.split('_')[1]
+}
+
 const updateActions = function() {
   removeOptions(actionList)
-  const actionsKey = templateList.value + '-' + getVoiceLocationFromName(voiceList.value)
+  const actionsKey = getActionKey()
 
   if (cachedActions[actionsKey] != undefined) {
     setNewActions(cachedActions[actionsKey])
@@ -258,9 +264,7 @@ function loopSay(msg, timeout) {
 }
 
 const getUrl = function() {
-
-  let url = 'v1/' + templateList.value + '-' + getVoiceLocationFromName(voiceList.value)
-
+  let url = 'v1/' + getActionKey()
   if (actionList.value != "") {
     url += '/' + actionList.value
   }

@@ -3,8 +3,8 @@
 var express = require('express');
 var app = express();
 var RateLimit = require('express-rate-limit');
-var morgan = require('morgan')
-app.use(morgan('tiny'))
+// var morgan = require('morgan')
+// app.use(morgan('tiny'))
 var config = require('config');
 
 var limiter = new RateLimit({
