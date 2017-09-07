@@ -12,7 +12,7 @@ const getTemplate = (file) => {
   } else if (fs.existsSync(BASE_DIR + file + '.yaml')) {
     return yaml.safeLoad(fs.readFileSync(BASE_DIR + file + '.yaml', {encoding: 'utf-8'}));
   }
-    throw "Template '" + file + "' not found"
+    throw new Error("Template '" + file + "' not found")
 }
 
 const sendResponse = (request, response, data) => {
@@ -46,9 +46,16 @@ const getActionList = (template) => {
 }
 
 router.route('/:file/actions').get(function (req, res) {
-  const template = getTemplate(req.params.file), actions = getActionList(template)
+  try {
+    const template = getTemplate(req.params.file), actions = getActionList(template)
 
-  sendResponse(req, res, {"success": true, "file": req.params.action, "actions": actions})
+    sendResponse(req, res, {"success": true, "file": req.params.action, "actions": actions})
+  } catch (e) {
+    console.log(e)
+
+    sendResponse(req, res, {"success": false, "text": e.message})
+    return
+  }
 })
 
 router.route('/:file/:action*?')
@@ -68,7 +75,7 @@ router.route('/:file/:action*?')
     }
 
     var text = template.texts[action], orgtext = text
-    
+
     let valueList = JSON.parse(JSON.stringify(template.values)), i = 0
 
     while (text.match(/{(\w+)}/)) {

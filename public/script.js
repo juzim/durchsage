@@ -1,3 +1,4 @@
+
 const showMessage = function (title, message, type) {
   currentAnnouncementBox.className = "alert alert-" + type
   currentAnnouncementTitle.innerHTML = title
@@ -18,19 +19,19 @@ var HttpClient = function() {
 }
 
 var createCookie = function(name, value, days) {
-    var expires;
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toGMTString();
-    }
-    else {
-        expires = "";
-    }
-    document.cookie = name + "=" + value + expires + "; path=/";
+  var expires;
+  if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toGMTString();
+  }
+  else {
+      expires = "";
+  }
+  document.cookie = name + "=" + value + expires + "; path=/";
 }
 
-function getCookie(c_name) {
+const getCookie = function (c_name) {
     if (document.cookie.length > 0) {
         c_start = document.cookie.indexOf(c_name + "=");
         if (c_start != -1) {
@@ -73,6 +74,8 @@ let button = document.getElementById("button-say"),
   client = new HttpClient(),
   cachedActions = {},
   cachedTemplates = {}
+
+
 
 msg.onend = function() {
   if (!playLoop) {
@@ -133,7 +136,6 @@ const updateTemplates = function() {
   try {
     removeOptions(templateList)
     const templatesForLocation = templates.filter(function (t) {
-
       return t.split('_')[0] == getVoiceLocationFromName(voiceList.value).split('_')[0]
     })
 
@@ -141,11 +143,11 @@ const updateTemplates = function() {
       throw "No templates found for this language. Feel free to add more templates on github"
     }
 
-    modes = templatesForLocation.map(function(f) { return f.split('-')[0];})
+    modes = templatesForLocation.map(function(f) { return f.split('_')[1];})
     for (var i = 0; i < modes.length; i++) {
-      var option = document.createElement("option");
-      option.value = modes[i];
-      option.text = modes[i];
+      var option = document.createElement("option"), text = modes[i]
+      option.value = text
+      option.text = text.charAt(0).toUpperCase() + text.slice(1)
       templateList.appendChild(option);
     }
     setLoadingState("templates", false)
@@ -181,7 +183,7 @@ const setNewActions = function(actions) {
 }
 
 const getActionKey = function() {
-  return getVoiceLocationFromName(voiceList.value).split('_')[0] + '_' + templateList.value.split('_')[1]
+  return getVoiceLocationFromName(voiceList.value).split('_')[0] + '_' + templateList.value
 }
 
 const updateActions = function() {
@@ -194,8 +196,8 @@ const updateActions = function() {
     client.get('v1/' + actionsKey + '/actions', function(response) {
       const res = JSON.parse(response)
       if (!res.success) {
-        showMessage('Something went wrong: ', res.text, "error")
         reset()
+        showMessage('Something went wrong: ', res.text, "danger")
         return
       }
 
@@ -357,6 +359,6 @@ speechSynthesis.onvoiceschanged = function() {
       updateLocations()
     });
   } catch (e) {
-    showMessage('Something went wrong', "e", "danger")
+    showMessage('Something went wrong', e, "danger")
   }
 }
