@@ -154,7 +154,6 @@ const updateTemplates = function() {
     updateActions()
   } catch (e) {
     showMessage('Template not found', "No template was found for this language, feel free to add your own at github", "warning")
-    throw e
   }
 }
 
