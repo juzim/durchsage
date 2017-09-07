@@ -10,6 +10,7 @@
   "texts": {
     "Fahrausweis": "Bitte gültigen Fahrausweis beschaffen und selbst entwerten. {postfix}",
     "Willkommen": "{prefix} Der Speisewagen befindet sich heute in Wagen {wagon}. {postfix}",
-    "Ankunft": "Wir erreichen nun {city}. Dort werden alle Anschlusszüge erreicht. {adieu}"
+    "Ankunft": "Wir erreichen nun {city}. Dort werden alle Anschlusszüge erreicht. {adieu}",
+    "Tunnel": "Vorsicht, ein Tunnel kommt!"
   }
 }
